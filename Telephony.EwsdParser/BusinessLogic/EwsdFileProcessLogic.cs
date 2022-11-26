@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Telephony.Ewsd.BusinessLogic;
+namespace Telephony.EwsdParser.BusinessLogic;
 
 public class EwsdFileProcessLogic : IEwsdFileProcessLogic
 {

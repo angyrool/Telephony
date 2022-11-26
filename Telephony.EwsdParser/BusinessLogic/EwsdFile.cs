@@ -1,4 +1,4 @@
-namespace Telephony.Ewsd.BusinessLogic;
+namespace Telephony.EwsdParser.BusinessLogic;
 
 public class EwsdFile
 {

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Telephony.Ewsd.BusinessLogic;
+namespace Telephony.EwsdParser.BusinessLogic;
 
 public class EwsdWorker : IHostedService
 {

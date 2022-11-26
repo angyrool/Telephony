@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Telephony.Ewsd;
-using Telephony.Ewsd.BusinessLogic;
+using Telephony.EwsdParser;
+using Telephony.EwsdParser.BusinessLogic;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>

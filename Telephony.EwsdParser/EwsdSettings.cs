@@ -1,4 +1,4 @@
-namespace Telephony.Ewsd;
+namespace Telephony.EwsdParser;
 
 public class EwsdSettings
 {
