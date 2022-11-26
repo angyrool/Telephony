@@ -1,19 +1,19 @@
 namespace Telephony.Ewsd.BusinessLogic;
 
-public interface IEwsdFileTaskManager
+public interface IEwsdFileParsingTaskManager
 {
     /// <summary>
     /// Взять новую задачу
     /// </summary>
     /// <returns></returns>
-    EwsdFileTask GetNew();
+    EwsdFileParsingTask GetNew();
 
     /// <summary>
     /// Изменить статус задачи
     /// </summary>
-    /// <param name="fileTask"></param>
+    /// <param name="fileParsingTask"></param>
     /// <param name="status"></param>
-    void SetStatus(EwsdFileTask fileTask, EwsdFileTaskStatuses status);
+    void SetStatus(EwsdFileParsingTask fileParsingTask, EwsdFileParsingTaskStatuses status);
 
     /// <summary>
     /// Есть ли задачи на выполнение
@@ -22,7 +22,7 @@ public interface IEwsdFileTaskManager
     bool Any();
 }
 
-public enum EwsdFileTaskStatuses
+public enum EwsdFileParsingTaskStatuses
 {
     /// <summary>
     /// новая задача

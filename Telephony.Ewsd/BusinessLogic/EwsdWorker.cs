@@ -5,18 +5,18 @@ namespace Telephony.Ewsd.BusinessLogic;
 public class EwsdWorker : IHostedService
 {
     private readonly IEwsdFileProcessLogic _fileProcessLogic;
-    private readonly IEwsdFileTaskManager _fileTaskManager;
+    private readonly IEwsdFileParsingTaskManager _fileParsingTaskManager;
 
-    public EwsdWorker(IEwsdFileProcessLogic fileProcessLogic, IEwsdFileTaskManager fileTaskManager)
+    public EwsdWorker(IEwsdFileProcessLogic fileProcessLogic, IEwsdFileParsingTaskManager fileParsingTaskManager)
     {
         _fileProcessLogic = fileProcessLogic;
-        _fileTaskManager = fileTaskManager;
+        _fileParsingTaskManager = fileParsingTaskManager;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await Task.Delay(1000, cancellationToken);
-        while (_fileTaskManager.Any())
+        while (_fileParsingTaskManager.Any())
         {
             _fileProcessLogic.Run();
         }
