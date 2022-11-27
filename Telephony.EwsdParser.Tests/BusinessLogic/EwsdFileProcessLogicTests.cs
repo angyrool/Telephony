@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -180,5 +181,82 @@ public class EwsdFileProcessLogicTests
         
         Assert.AreEqual(0,savedRecords.Count);
         Assert.AreEqual(EwsdFileParsingTaskStatuses.NoFile,parsingTask.Status);
+    }
+    
+    [TestMethod]
+    public void EwsdFileProcessLogic_Run_Processed_NoBytes_Test()
+    {
+        var parsingTask = new EwsdFileParsingTask()
+        {
+            File = new EwsdFile()
+            {
+                Name = "123",
+                Path = "c://ewsd/123"
+            },
+            Status = EwsdFileParsingTaskStatuses.New
+        };
+        
+        var fileParsingTaskManagerMock = new Mock<IEwsdFileParsingTaskManager>();
+        
+        fileParsingTaskManagerMock
+            .Setup(ewsdFileParsingTaskManager => ewsdFileParsingTaskManager.GetNew())
+            .Returns(parsingTask);
+        
+        fileParsingTaskManagerMock
+            .Setup(ewsdFileParsingTaskManager => ewsdFileParsingTaskManager
+                .SetStatus(It.IsAny<EwsdFileParsingTask>(), It.IsAny<EwsdFileParsingTaskStatuses>()))
+            .Callback((EwsdFileParsingTask task, EwsdFileParsingTaskStatuses status) =>
+            {
+                task.Status = status;
+            });
+        
+        _containerBuilder?.RegisterInstance(fileParsingTaskManagerMock.Object).As<IEwsdFileParsingTaskManager>();
+
+
+        var fileSystemMock = new Mock<IFileSystem>();
+
+        fileSystemMock
+            .Setup(fileSystem => fileSystem.IsFileExists(It.IsAny<string>()))
+            .Returns(true);
+        
+        fileSystemMock
+            .Setup(fileSystem => fileSystem.GetFileBytes(It.IsAny<string>()))
+            .Returns(Array.Empty<byte>());
+        
+        _containerBuilder?.RegisterInstance(fileSystemMock.Object).As<IFileSystem>();
+
+
+        var filePackageManagerMock = new Mock<IEwsdFilePackageManager>();
+
+        filePackageManagerMock
+            .Setup(filePackageManager => filePackageManager.GetPackageArrays(It.IsAny<byte[]>()))
+            .Returns(new[] {new IEwsdPackage[]{ new EwsdPackage(), new EwsdPackage() }});
+        
+        _containerBuilder?.RegisterInstance(filePackageManagerMock.Object).As<IEwsdFilePackageManager>();
+
+        
+        var savedRecords = new List<EwsdRecord>();
+        var recordsManagerMock = new Mock<IEwsdRecordsManager>();
+        
+        recordsManagerMock
+            .Setup(recordsManager => recordsManager.Add(It.IsAny<IEnumerable<EwsdRecord>>()))
+            .Callback((IEnumerable<EwsdRecord> records) =>
+            {
+                savedRecords.AddRange(records);
+            });
+        
+        _containerBuilder?.RegisterInstance(recordsManagerMock.Object).As<IEwsdRecordsManager>();
+
+        
+        var container = _containerBuilder?.Build();
+        var serviceProvider = new AutofacServiceProvider(container);
+        var fileProcessLogic = serviceProvider.GetService<IEwsdFileProcessLogic>();
+        
+        Assert.IsNotNull(fileProcessLogic);
+        
+        fileProcessLogic.Run();
+        
+        Assert.AreEqual(0,savedRecords.Count);
+        Assert.AreEqual(EwsdFileParsingTaskStatuses.NoBytes,parsingTask.Status);
     }
 }
