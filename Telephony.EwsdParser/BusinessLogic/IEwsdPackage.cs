@@ -6,3 +6,7 @@ namespace Telephony.EwsdParser.BusinessLogic;
 public interface IEwsdPackage
 {
 }
+
+public class EwsdPackage : IEwsdPackage
+{
+}

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telephony.EwsdParser", "Telephony.EwsdParser\Telephony.EwsdParser.csproj", "{8752AA6B-02C3-4BCA-B833-CDFB89D050CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telephony.EwsdParser.Tests", "Telephony.EwsdParser.Tests\Telephony.EwsdParser.Tests.csproj", "{0DCC6453-F54C-4ED5-A4AF-4A93A3F4E65F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8752AA6B-02C3-4BCA-B833-CDFB89D050CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8752AA6B-02C3-4BCA-B833-CDFB89D050CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8752AA6B-02C3-4BCA-B833-CDFB89D050CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DCC6453-F54C-4ED5-A4AF-4A93A3F4E65F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DCC6453-F54C-4ED5-A4AF-4A93A3F4E65F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DCC6453-F54C-4ED5-A4AF-4A93A3F4E65F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DCC6453-F54C-4ED5-A4AF-4A93A3F4E65F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
