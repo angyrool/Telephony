@@ -11,6 +11,9 @@ public class EwsdRecord
     /// <param name="ewsdPackageArray">массив пакетов</param>
     public EwsdRecord(IEwsdPackage[] ewsdPackageArray)
     {
-        
+        if (ewsdPackageArray.Length == 0)
+        {
+            throw new Exception("нет пакетов для создания записи");
+        }
     }
 }

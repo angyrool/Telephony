@@ -7,17 +7,17 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
     private readonly ILogger<EwsdFileProcessLogic> _logger;
     private readonly IEwsdFileParsingTaskManager _fileParsingTaskManager;
     private readonly IFileSystem _fileSystem;
-    private readonly IEwsdFilePackageManager _packageManager;
+    private readonly IEwsdFilePackageManager _filePackageManager;
     private readonly IEwsdRecordsManager _recordsManager;
 
     public EwsdFileProcessLogic(ILogger<EwsdFileProcessLogic> logger, 
         IEwsdFileParsingTaskManager fileParsingTaskManager, 
-        IFileSystem fileSystem, IEwsdFilePackageManager packageManager, IEwsdRecordsManager recordsManager)
+        IFileSystem fileSystem, IEwsdFilePackageManager filePackageManager, IEwsdRecordsManager recordsManager)
     {
         _logger = logger;
         _fileParsingTaskManager = fileParsingTaskManager;
         _fileSystem = fileSystem;
-        _packageManager = packageManager;
+        _filePackageManager = filePackageManager;
         _recordsManager = recordsManager;
     }
 
@@ -50,7 +50,7 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
             return;
         }
 
-        var packageArrays = _packageManager.GetPackageArrays(fileBytes);
+        var packageArrays = _filePackageManager.GetPackageArrays(fileBytes);
 
         if (packageArrays.Length == 0)
         {
@@ -62,8 +62,7 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
         }
         
         var records = packageArrays
-            .Select(packageArray => new EwsdRecord(packageArray)) as EwsdRecord[] 
-                      ?? Array.Empty<EwsdRecord>();
+            .Select(packageArray => new EwsdRecord(packageArray)).ToArray();
 
         if (records.Length == 0)
         {
