@@ -8,5 +8,5 @@ public interface IEwsdFileProcessLogic
     /// <summary>
     /// Запуск обработки ewsd файла
     /// </summary>
-    void Run();
+    void Run(EwsdFileParsingTask fileParsingTask);
 }

@@ -21,63 +21,61 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
         _recordsManager = recordsManager;
     }
 
-    public void Run()
+    public void Run(EwsdFileParsingTask fileParsingTask)
     {
-        var fileParsingTask = _fileParsingTaskManager.GetNew();
-        _logger.LogInformation(@"Обработка файла {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
-            TaskId: {FileTaskId}", fileParsingTask.File.Id, fileParsingTask.File.Name, 
-            fileParsingTask.File.Path, fileParsingTask.Id);
-        
-        _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.InProcess);
-
-        if (!_fileSystem.IsFileExists(fileParsingTask.File.Path))
+        try
         {
-            _logger.LogWarning(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
-                TaskId: {FileTaskId} не найден", fileParsingTask.File.Id, fileParsingTask.File.Name, 
+            _logger.LogInformation(@"Обработка файла {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
+            TaskId: {FileTaskId}", fileParsingTask.File.Id, fileParsingTask.File.Name,
                 fileParsingTask.File.Path, fileParsingTask.Id);
-            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoFile);
-            return;
+
+            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.InProcess);
+
+            if (!_fileSystem.IsFileExists(fileParsingTask.File.Path))
+            {
+                _logger.LogWarning(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
+                TaskId: {FileTaskId} не найден", fileParsingTask.File.Id, fileParsingTask.File.Name,
+                    fileParsingTask.File.Path, fileParsingTask.Id);
+                _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoFile);
+                return;
+            }
+
+            var fileBytes = _fileSystem.GetFileBytes(fileParsingTask.File.Path);
+
+            if (fileBytes.Length == 0)
+            {
+                _logger.LogWarning(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
+                TaskId: {FileTaskId} не содержит байтов (пустой)", fileParsingTask.File.Id,
+                    fileParsingTask.File.Name, fileParsingTask.File.Path, fileParsingTask.Id);
+                _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoBytes);
+                return;
+            }
+
+            var packageArrays = _filePackageManager.GetPackageArrays(fileBytes);
+
+            if (packageArrays.Length == 0)
+            {
+                _logger.LogWarning(@"Из байтов файла {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
+                TaskId: {FileTaskId} не удалось создать массивы пакетов", fileParsingTask.File.Id,
+                    fileParsingTask.File.Name, fileParsingTask.File.Path, fileParsingTask.Id);
+                _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoRecords);
+                return;
+            }
+
+            var records = packageArrays
+                .Select(packageArray => new EwsdRecord(packageArray)).ToArray();
+
+            _recordsManager.Add(records);
+
+            _logger.LogInformation(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
+            TaskId: {FileTaskId} успешно обработан", fileParsingTask.File.Id, fileParsingTask.File.Name,
+                fileParsingTask.File.Path, fileParsingTask.Id);
+            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.Processed);
         }
-        
-        var fileBytes = _fileSystem.GetFileBytes(fileParsingTask.File.Path);
-        
-        if (fileBytes.Length == 0)
+        catch (Exception e)
         {
-            _logger.LogWarning(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
-                TaskId: {FileTaskId} не содержит байтов (пустой)", fileParsingTask.File.Id, 
-                fileParsingTask.File.Name, fileParsingTask.File.Path, fileParsingTask.Id);
-            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoBytes);
-            return;
+            fileParsingTask.Status = EwsdFileParsingTaskStatuses.Error;
+            fileParsingTask.Message = e.Message;
         }
-
-        var packageArrays = _filePackageManager.GetPackageArrays(fileBytes);
-
-        if (packageArrays.Length == 0)
-        {
-            _logger.LogWarning(@"Из байтов файла {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
-                TaskId: {FileTaskId} не удалось создать массивы пакетов", fileParsingTask.File.Id, 
-                fileParsingTask.File.Name, fileParsingTask.File.Path, fileParsingTask.Id);
-            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoPackageRecords);
-            return;
-        }
-        
-        var records = packageArrays
-            .Select(packageArray => new EwsdRecord(packageArray)).ToArray();
-
-        if (records.Length == 0)
-        {
-            _logger.LogWarning(@"Из байтов файла {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
-                TaskId: {FileTaskId} не удалось создать записи", fileParsingTask.File.Id, 
-                fileParsingTask.File.Name, fileParsingTask.File.Path, fileParsingTask.Id);
-            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoRecords);
-            return;
-        }
-
-        _recordsManager.Add(records);
-        
-        _logger.LogInformation(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
-            TaskId: {FileTaskId} успешно обработан", fileParsingTask.File.Id, fileParsingTask.File.Name, 
-            fileParsingTask.File.Path, fileParsingTask.Id);
-        _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.Processed);
     }
 }

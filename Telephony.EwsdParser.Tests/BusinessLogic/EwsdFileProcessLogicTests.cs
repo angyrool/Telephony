@@ -29,13 +29,13 @@ public class EwsdFileProcessLogicTests
         _containerBuilder.Populate(services);
     }
 
-    private EwsdFileParsingTask? _parsingTask;
+    private EwsdFileParsingTask? _fileParsingTask;
     private List<EwsdRecord>? _savedRecords;
 
     [TestInitialize]
     public void Setup()
     {
-        _parsingTask = new EwsdFileParsingTask()
+        _fileParsingTask = new EwsdFileParsingTask()
         {
             File = new EwsdFile()
             {
@@ -56,7 +56,7 @@ public class EwsdFileProcessLogicTests
 
         fileParsingTaskManagerMock
             .Setup(ewsdFileParsingTaskManager => ewsdFileParsingTaskManager.GetNew())
-            .Returns(_parsingTask!);
+            .Returns(_fileParsingTask!);
 
         fileParsingTaskManagerMock
             .Setup(ewsdFileParsingTaskManager => ewsdFileParsingTaskManager
@@ -106,10 +106,10 @@ public class EwsdFileProcessLogicTests
         
         Assert.IsNotNull(fileProcessLogic);
         
-        fileProcessLogic.Run();
+        fileProcessLogic.Run(_fileParsingTask!);
         
         Assert.AreEqual(1,_savedRecords?.Count);
-        Assert.AreEqual(EwsdFileParsingTaskStatuses.Processed,_parsingTask?.Status);
+        Assert.AreEqual(EwsdFileParsingTaskStatuses.Processed,_fileParsingTask?.Status);
     }
     
     [TestMethod]
@@ -134,10 +134,10 @@ public class EwsdFileProcessLogicTests
         
         Assert.IsNotNull(fileProcessLogic);
         
-        fileProcessLogic.Run();
+        fileProcessLogic.Run(_fileParsingTask!);
         
         Assert.AreEqual(0,_savedRecords?.Count);
-        Assert.AreEqual(EwsdFileParsingTaskStatuses.NoFile,_parsingTask?.Status);
+        Assert.AreEqual(EwsdFileParsingTaskStatuses.NoFile, _fileParsingTask?.Status);
     }
     
     [TestMethod]
@@ -162,9 +162,32 @@ public class EwsdFileProcessLogicTests
         
         Assert.IsNotNull(fileProcessLogic);
         
-        fileProcessLogic.Run();
+        fileProcessLogic.Run(_fileParsingTask!);
         
         Assert.AreEqual(0,_savedRecords?.Count);
-        Assert.AreEqual(EwsdFileParsingTaskStatuses.NoBytes,_parsingTask?.Status);
+        Assert.AreEqual(EwsdFileParsingTaskStatuses.NoBytes, _fileParsingTask?.Status);
+    }
+    
+    [TestMethod]
+    public void EwsdFileProcessLogic_Run_Processed_NoRecords_Test()
+    {
+        var filePackageManagerMock = new Mock<IEwsdFilePackageManager>();
+
+        filePackageManagerMock
+            .Setup(filePackageManager => filePackageManager.GetPackageArrays(It.IsAny<byte[]>()))
+            .Returns(new IEwsdPackage[][]{});
+
+        _containerBuilder?.RegisterInstance(filePackageManagerMock.Object).As<IEwsdFilePackageManager>();
+        
+        var container = _containerBuilder?.Build();
+        var serviceProvider = new AutofacServiceProvider(container);
+        var fileProcessLogic = serviceProvider.GetService<IEwsdFileProcessLogic>();
+        
+        Assert.IsNotNull(fileProcessLogic);
+        
+        fileProcessLogic.Run(_fileParsingTask!);
+        
+        Assert.AreEqual(0,_savedRecords?.Count);
+        Assert.AreEqual(EwsdFileParsingTaskStatuses.NoRecords, _fileParsingTask?.Status);
     }
 }

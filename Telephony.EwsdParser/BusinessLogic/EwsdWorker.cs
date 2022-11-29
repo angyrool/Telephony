@@ -28,7 +28,8 @@ public class EwsdWorker : IHostedService
         {
             if (_fileParsingTaskManager.Any())
             {
-                _fileProcessLogic.Run();
+                var fileParsingTask = _fileParsingTaskManager.GetNew();
+                _fileProcessLogic.Run(fileParsingTask);
             }
             else
             {

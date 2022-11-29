@@ -45,14 +45,14 @@ public enum EwsdFileParsingTaskStatuses
     /// Нет байтов
     /// </summary>
     NoBytes = 4,
-    
-    /// <summary>
-    /// Нет записей (массива пакетов)
-    /// </summary>
-    NoPackageRecords = 5,
-    
+
     /// <summary>
     /// Нет записей
     /// </summary>
-    NoRecords = 6
+    NoRecords = 5,
+    
+    /// <summary>
+    /// Возникла ошибка при обработке файла
+    /// </summary>
+    Error = 6
 }

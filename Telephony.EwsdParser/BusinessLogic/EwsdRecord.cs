@@ -8,12 +8,16 @@ public class EwsdRecord
     /// <summary>
     /// Создание записи из массива пакетов
     /// </summary>
-    /// <param name="ewsdPackageArray">массив пакетов</param>
-    public EwsdRecord(IEwsdPackage[] ewsdPackageArray)
+    /// <param name="packages">пакеты</param>
+    public EwsdRecord(IEwsdPackage[] packages)
     {
-        if (ewsdPackageArray.Length == 0)
-        {
-            throw new Exception("нет пакетов для создания записи");
-        }
+        _packages = packages;
+    }
+
+    private readonly IEwsdPackage[] _packages;
+
+    public bool IsValid()
+    {
+        return _packages.Length > 0;
     }
 }
