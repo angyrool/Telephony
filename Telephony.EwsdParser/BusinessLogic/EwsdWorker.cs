@@ -6,17 +6,18 @@ namespace Telephony.EwsdParser.BusinessLogic;
 
 public class EwsdWorker : IHostedService
 {
-    private readonly IEwsdFileProcessLogic _fileProcessLogic;
     private readonly IEwsdFileParsingTaskManager _fileParsingTaskManager;
     private readonly ILogger<EwsdWorker> _logger;
     private readonly EwsdSettings _settings;
 
-    public EwsdWorker(IEwsdFileProcessLogic fileProcessLogic, IEwsdFileParsingTaskManager fileParsingTaskManager, 
-        ILogger<EwsdWorker> logger, IOptions<EwsdSettings> settings)
+    private readonly IEwsdFileParsingTaskProcessLogic _parsingTaskProcessLogic;
+    public EwsdWorker(IEwsdFileParsingTaskManager fileParsingTaskManager, 
+        ILogger<EwsdWorker> logger, IOptions<EwsdSettings> settings, 
+        EwsdFileParsingTaskProcessLogic parsingTaskProcessLogic)
     {
-        _fileProcessLogic = fileProcessLogic;
         _fileParsingTaskManager = fileParsingTaskManager;
         _logger = logger;
+        _parsingTaskProcessLogic = parsingTaskProcessLogic;
         _settings = settings.Value;
     }
 
@@ -28,8 +29,7 @@ public class EwsdWorker : IHostedService
         {
             if (_fileParsingTaskManager.Any())
             {
-                var fileParsingTask = _fileParsingTaskManager.GetNew();
-                _fileProcessLogic.Run(fileParsingTask);
+                _parsingTaskProcessLogic.Run();
             }
             else
             {

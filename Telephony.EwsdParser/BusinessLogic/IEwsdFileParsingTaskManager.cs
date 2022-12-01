@@ -9,11 +9,10 @@ public interface IEwsdFileParsingTaskManager
     EwsdFileParsingTask GetNew();
 
     /// <summary>
-    /// Изменить статус задачи
+    /// Сохранить задачу
     /// </summary>
     /// <param name="fileParsingTask"></param>
-    /// <param name="status"></param>
-    void SetStatus(EwsdFileParsingTask fileParsingTask, EwsdFileParsingTaskStatuses status);
+    void Save(EwsdFileParsingTask fileParsingTask);
 
     /// <summary>
     /// Есть ли задачи на выполнение
@@ -25,20 +24,23 @@ public interface IEwsdFileParsingTaskManager
 public enum EwsdFileParsingTaskStatuses
 {
     /// <summary>
-    /// новая задача
+    /// Новая задача
     /// </summary>
     New = 0,
     
     /// <summary>
-    /// задача в обработке
+    /// Задача в обработке
     /// </summary>
     InProcess = 1,
     
     /// <summary>
-    /// задача успешно выполнена
+    /// Задача успешно выполнена
     /// </summary>
     Processed = 2,
     
+    /// <summary>
+    /// Файла не существует
+    /// </summary>
     NoFile = 3,
     
     /// <summary>

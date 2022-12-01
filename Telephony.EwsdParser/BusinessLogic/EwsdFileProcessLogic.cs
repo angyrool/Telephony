@@ -5,17 +5,14 @@ namespace Telephony.EwsdParser.BusinessLogic;
 public class EwsdFileProcessLogic : IEwsdFileProcessLogic
 {
     private readonly ILogger<EwsdFileProcessLogic> _logger;
-    private readonly IEwsdFileParsingTaskManager _fileParsingTaskManager;
     private readonly IFileSystem _fileSystem;
     private readonly IEwsdFilePackageManager _filePackageManager;
     private readonly IEwsdRecordsManager _recordsManager;
 
-    public EwsdFileProcessLogic(ILogger<EwsdFileProcessLogic> logger, 
-        IEwsdFileParsingTaskManager fileParsingTaskManager, 
+    public EwsdFileProcessLogic(ILogger<EwsdFileProcessLogic> logger,
         IFileSystem fileSystem, IEwsdFilePackageManager filePackageManager, IEwsdRecordsManager recordsManager)
     {
         _logger = logger;
-        _fileParsingTaskManager = fileParsingTaskManager;
         _fileSystem = fileSystem;
         _filePackageManager = filePackageManager;
         _recordsManager = recordsManager;
@@ -29,14 +26,12 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
             TaskId: {FileTaskId}", fileParsingTask.File.Id, fileParsingTask.File.Name,
                 fileParsingTask.File.Path, fileParsingTask.Id);
 
-            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.InProcess);
-
             if (!_fileSystem.IsFileExists(fileParsingTask.File.Path))
             {
                 _logger.LogWarning(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
                 TaskId: {FileTaskId} не найден", fileParsingTask.File.Id, fileParsingTask.File.Name,
                     fileParsingTask.File.Path, fileParsingTask.Id);
-                _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoFile);
+                fileParsingTask.Status = EwsdFileParsingTaskStatuses.NoFile;
                 return;
             }
 
@@ -47,7 +42,7 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
                 _logger.LogWarning(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
                 TaskId: {FileTaskId} не содержит байтов (пустой)", fileParsingTask.File.Id,
                     fileParsingTask.File.Name, fileParsingTask.File.Path, fileParsingTask.Id);
-                _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoBytes);
+                fileParsingTask.Status = EwsdFileParsingTaskStatuses.NoBytes;
                 return;
             }
 
@@ -58,7 +53,7 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
                 _logger.LogWarning(@"Из байтов файла {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
                 TaskId: {FileTaskId} не удалось создать массивы пакетов", fileParsingTask.File.Id,
                     fileParsingTask.File.Name, fileParsingTask.File.Path, fileParsingTask.Id);
-                _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.NoRecords);
+                fileParsingTask.Status = EwsdFileParsingTaskStatuses.NoRecords;
                 return;
             }
 
@@ -70,7 +65,7 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
             _logger.LogInformation(@"Файл {FileTaskFileId} '{FileTaskFileName}' ({FileTaskFilePath}) 
             TaskId: {FileTaskId} успешно обработан", fileParsingTask.File.Id, fileParsingTask.File.Name,
                 fileParsingTask.File.Path, fileParsingTask.Id);
-            _fileParsingTaskManager.SetStatus(fileParsingTask, EwsdFileParsingTaskStatuses.Processed);
+            fileParsingTask.Status = EwsdFileParsingTaskStatuses.Processed;
         }
         catch (Exception e)
         {

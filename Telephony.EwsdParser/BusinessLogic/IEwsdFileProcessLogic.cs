@@ -1,12 +1,12 @@
 namespace Telephony.EwsdParser.BusinessLogic;
 
 /// <summary>
-/// Логика обработки ewsd файла
+/// Логика обработки (парсинга) ewsd файла
 /// </summary>
 public interface IEwsdFileProcessLogic
 {
     /// <summary>
-    /// Запуск обработки ewsd файла
+    /// Запуск обработки (парсинга) ewsd файла
     /// </summary>
     void Run(EwsdFileParsingTask fileParsingTask);
 }

@@ -17,13 +17,9 @@ public class EwsdFileProcessLogicTests
 
     public EwsdFileProcessLogicTests()
     {
-        var configurationBuilder = new ConfigurationBuilder();
-        var configurationRoot = configurationBuilder.Build();
-
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton<IEwsdFileProcessLogic, EwsdFileProcessLogic>();
-        services.Configure<EwsdSettings>(configurationRoot.GetSection(nameof(EwsdSettings)));
 
         _containerBuilder = new ContainerBuilder();
         _containerBuilder.Populate(services);
@@ -52,20 +48,6 @@ public class EwsdFileProcessLogicTests
 
     private void RegisterAllMockObjects()
     {
-        var fileParsingTaskManagerMock = new Mock<IEwsdFileParsingTaskManager>();
-
-        fileParsingTaskManagerMock
-            .Setup(ewsdFileParsingTaskManager => ewsdFileParsingTaskManager.GetNew())
-            .Returns(_fileParsingTask!);
-
-        fileParsingTaskManagerMock
-            .Setup(ewsdFileParsingTaskManager => ewsdFileParsingTaskManager
-                .SetStatus(It.IsAny<EwsdFileParsingTask>(), It.IsAny<EwsdFileParsingTaskStatuses>()))
-            .Callback((EwsdFileParsingTask task, EwsdFileParsingTaskStatuses status) => { task.Status = status; });
-
-        _containerBuilder?.RegisterInstance(fileParsingTaskManagerMock.Object).As<IEwsdFileParsingTaskManager>();
-
-
         var fileSystemMock = new Mock<IFileSystem>();
 
         fileSystemMock
