@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Telephony.EwsdModel.Table;
 using Telephony.EwsdParser.BusinessLogic;
 
 namespace Telephony.EwsdParser.Tests.BusinessLogic;
@@ -68,6 +68,15 @@ public class EwsdFileProcessLogicTests
             .Returns(new[] { new IEwsdPackage[] { new EwsdPackage(), new EwsdPackage() } });
 
         _containerBuilder?.RegisterInstance(filePackageManagerMock.Object).As<IEwsdFilePackageManager>();
+        
+        
+        var recordCreatingLogicMock = new Mock<IEwsdRecordCreatingLogic>();
+
+        recordCreatingLogicMock
+            .Setup(filePackageManager => filePackageManager.Create(It.IsAny<IEwsdPackage[]>()))
+            .Returns(new EwsdRecord());
+
+        _containerBuilder?.RegisterInstance(recordCreatingLogicMock.Object).As<IEwsdRecordCreatingLogic>();
 
 
         var recordsManagerMock = new Mock<IEwsdRecordsManager>();
@@ -157,7 +166,7 @@ public class EwsdFileProcessLogicTests
 
         filePackageManagerMock
             .Setup(filePackageManager => filePackageManager.GetPackageArrays(It.IsAny<byte[]>()))
-            .Returns(new IEwsdPackage[][]{});
+            .Returns(Array.Empty<IEwsdPackage[]>());
 
         _containerBuilder?.RegisterInstance(filePackageManagerMock.Object).As<IEwsdFilePackageManager>();
         

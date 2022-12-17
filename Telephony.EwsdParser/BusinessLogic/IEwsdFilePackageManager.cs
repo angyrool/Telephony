@@ -3,7 +3,7 @@ namespace Telephony.EwsdParser.BusinessLogic;
 public interface IEwsdFilePackageManager
 {
     /// <summary>
-    /// Возвратить массив из массивов IEwsdPackage: <br />
+    /// Возвратить массив из массивов IEwsdPackage (зубчатый): <br />
     /// [ <br />
     /// IEwsdPackage[ ], <br />
     /// IEwsdPackage[ ], <br />

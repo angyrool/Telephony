@@ -13,7 +13,7 @@ public class EwsdWorker : IHostedService
     private readonly IEwsdFileParsingTaskProcessLogic _parsingTaskProcessLogic;
     public EwsdWorker(IEwsdFileParsingTaskManager fileParsingTaskManager, 
         ILogger<EwsdWorker> logger, IOptions<EwsdSettings> settings, 
-        EwsdFileParsingTaskProcessLogic parsingTaskProcessLogic)
+        IEwsdFileParsingTaskProcessLogic parsingTaskProcessLogic)
     {
         _fileParsingTaskManager = fileParsingTaskManager;
         _logger = logger;

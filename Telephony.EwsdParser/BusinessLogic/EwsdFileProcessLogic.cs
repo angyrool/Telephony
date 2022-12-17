@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Telephony.EwsdModel.Table;
 
 namespace Telephony.EwsdParser.BusinessLogic;
 
@@ -8,14 +9,17 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
     private readonly IFileSystem _fileSystem;
     private readonly IEwsdFilePackageManager _filePackageManager;
     private readonly IEwsdRecordsManager _recordsManager;
+    private readonly IEwsdRecordCreatingLogic _recordCreatingLogic;
 
     public EwsdFileProcessLogic(ILogger<EwsdFileProcessLogic> logger,
-        IFileSystem fileSystem, IEwsdFilePackageManager filePackageManager, IEwsdRecordsManager recordsManager)
+        IFileSystem fileSystem, IEwsdFilePackageManager filePackageManager, IEwsdRecordsManager recordsManager, 
+        IEwsdRecordCreatingLogic recordCreatingLogic)
     {
         _logger = logger;
         _fileSystem = fileSystem;
         _filePackageManager = filePackageManager;
         _recordsManager = recordsManager;
+        _recordCreatingLogic = recordCreatingLogic;
     }
 
     public void Run(EwsdFileParsingTask fileParsingTask)
@@ -58,7 +62,7 @@ public class EwsdFileProcessLogic : IEwsdFileProcessLogic
             }
 
             var records = packageArrays
-                .Select(packageArray => new EwsdRecord(packageArray)).ToArray();
+                .Select(packageArray => _recordCreatingLogic.Create(packageArray));
 
             _recordsManager.Add(records);
 

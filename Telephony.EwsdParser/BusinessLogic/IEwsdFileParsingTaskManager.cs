@@ -1,3 +1,5 @@
+using Telephony.EwsdModel.Table;
+
 namespace Telephony.EwsdParser.BusinessLogic;
 
 public interface IEwsdFileParsingTaskManager
@@ -19,42 +21,4 @@ public interface IEwsdFileParsingTaskManager
     /// </summary>
     /// <returns>true, если есть</returns>
     bool Any();
-}
-
-public enum EwsdFileParsingTaskStatuses
-{
-    /// <summary>
-    /// Новая задача
-    /// </summary>
-    New = 0,
-    
-    /// <summary>
-    /// Задача в обработке
-    /// </summary>
-    InProcess = 1,
-    
-    /// <summary>
-    /// Задача успешно выполнена
-    /// </summary>
-    Processed = 2,
-    
-    /// <summary>
-    /// Файла не существует
-    /// </summary>
-    NoFile = 3,
-    
-    /// <summary>
-    /// Нет байтов
-    /// </summary>
-    NoBytes = 4,
-
-    /// <summary>
-    /// Нет записей
-    /// </summary>
-    NoRecords = 5,
-    
-    /// <summary>
-    /// Возникла ошибка при обработке файла
-    /// </summary>
-    Error = 6
 }
