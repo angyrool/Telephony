@@ -1,9 +1,19 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Telephony.EwsdModel.Table;
 
 public class EwsdFileParsingTask
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
+    
+    [Required]
+    public long FileId { get; set; }
     public EwsdFile File { get; set; }
+    
+    [Required]
     public EwsdFileParsingTaskStatuses Status { get; set; }
     public string? Message { get; set; }
 }
